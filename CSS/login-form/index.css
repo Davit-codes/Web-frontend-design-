@@ -1,0 +1,80 @@
+body{
+    background-image: url("https://i.pinimg.com/1200x/3a/a4/65/3aa465f08a93a8a27a8f02eab8920440.jpg");
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+.form-login{
+    width: 300px;
+    height: 500px;
+    border: 1px solid black;
+    border-radius: 20px;
+    padding: 30px;
+    background-color: rgba(55, 96, 114, 0.171);
+    margin: 70px auto;
+    color: rgba(53, 21, 180, 0.532);
+    font-size: 14px;
+    box-shadow: 0px 0px 20px 0px rgba(28, 65, 168, 0.596) inset;
+}
+.form-title{
+  text-align: center;
+}
+.CG{
+    font-size: 15px;
+    color: rgba(58, 10, 76, 0.676);
+    text-align: center;
+}
+.email{
+    font-size: 23px;
+    font-style: italic;
+    font-weight: bold;
+}
+.input{
+    width: 99%;
+    border-radius: 10px;
+    box-shadow: 1px 1px 15px 1px hsla(227, 67%, 25%, 0.692) inset;
+    border: none;
+    padding: 3px;
+    font-size: 15px ;
+    font-style: italic;
+    font-weight: bold;
+    
+}
+.phone-number{
+    font-size: 23px;
+    font-style: italic;
+    font-weight: bold;
+    color: rgba(188, 32, 115, 0.774);
+}
+.Name{
+    font-size: 23px;
+    font-style: italic;
+    font-weight: bold;
+    color: rgba(22, 184, 184, 0.712);
+}
+.last-name{
+    font-size: 23px;
+    font-style: italic;
+    font-weight: bold;
+    color: rgba(31, 31, 211, 0.566);
+}
+.massage{
+    font-size: 23px;
+    font-style: italic;
+    font-weight: bold;
+    color: rgba(90, 123, 185, 0.5);
+}
+.text-area{
+    background-color: rgba(70, 138, 150, 0.386);
+    font-weight: bold;
+    font-style: italic;
+    font-size: 15px;
+}
+.remember{
+    font-size: 15px;
+    font-style: italic;
+    color: white;
+}
+.send{
+    background-color: white;     
+    color: black;
+}
