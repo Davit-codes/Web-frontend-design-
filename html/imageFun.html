@@ -1,0 +1,1203 @@
+<!DOCTYPE html>
+<html lang="km">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Motherboard — Dell OptiPlex 3000 | Computer Architecture Interactive Lab</title>
+  <!-- Google Fonts: Noto Sans Khmer & Inter for crisp bilingual typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Khmer:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Noto Sans Khmer"', '"Inter"', 'sans-serif'],
+            mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'monospace']
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    body {
+      font-family: 'Noto Sans Khmer', 'Inter', sans-serif;
+      background-color: #d6dde6;
+      color: #1e293b;
+    }
+
+    /* Custom Scrollbar for Right Reference List */
+    .custom-scroll::-webkit-scrollbar {
+      width: 6px;
+    }
+    .custom-scroll::-webkit-scrollbar-track {
+      background: #f1f5f9;
+      border-radius: 6px;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb {
+      background: #94a3b8;
+      border-radius: 6px;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb:hover {
+      background: #64748b;
+    }
+
+    /* Callout Badge Pulse & Highlight States */
+    .hotspot-badge {
+      transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+      cursor: pointer;
+      user-select: none;
+    }
+    .hotspot-badge:hover,
+    .hotspot-badge.active {
+      transform: scale(1.08);
+      z-index: 40;
+      box-shadow: 0 0 0 3px #ffffff, 0 0 18px rgba(250, 204, 21, 0.95);
+    }
+    .hotspot-badge.dimmed {
+      opacity: 0.32;
+    }
+
+    /* SVG Board Part Highlighting */
+    .board-zone {
+      transition: opacity 0.25s ease, filter 0.25s ease;
+    }
+    .board-zone.highlighted {
+      filter: drop-shadow(0 0 8px rgba(250, 204, 21, 0.95)) brightness(1.18);
+    }
+
+    /* Animated Data Flow Dashes */
+    @keyframes flowDash {
+      to {
+        stroke-dashoffset: -24;
+      }
+    }
+    .flow-line-animated {
+      stroke-dasharray: 6 6;
+      animation: flowDash 1s linear infinite;
+    }
+
+    /* Subtle PCB Grid Pattern */
+    .pcb-bg {
+      background-color: #113524;
+      background-image: 
+        radial-gradient(rgba(52, 211, 153, 0.12) 1px, transparent 1px),
+        linear-gradient(to right, rgba(16, 185, 129, 0.06) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(16, 185, 129, 0.06) 1px, transparent 1px);
+      background-size: 16px 16px, 32px 32px, 32px 32px;
+    }
+
+    /* Language Mode Toggle Helper */
+    body.en-only .kh-text {
+      display: none;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between p-1.5 sm:p-2.5 lg:p-3 selection:bg-blue-600 selection:text-white">
+
+  <!-- Main Lab Container Frame -->
+  <div id="mb" class="max-w-[1540px] w-full mx-auto bg-[#e8edf3] rounded-xl shadow-2xl border border-slate-400/70 overflow-hidden flex flex-col">
+
+    <!-- 1. TOP BLUE HEADER BANNER (70% Left / 30% Right Split on Desktop) -->
+    <header class="grid grid-cols-1 lg:grid-cols-12 bg-gradient-to-r from-[#17469e] via-[#2159bd] to-[#1a4ba6] text-white border-b-2 border-[#0f2f6e] shadow-md">
+      <!-- Left 70% (8/12 cols on lg, custom 70/30 via lg:grid-cols-[7fr_3fr]) -->
+      <div class="lg:col-span-8 px-4 py-2.5 sm:px-5 sm:py-3 flex flex-wrap items-center justify-between gap-2 border-b lg:border-b-0 lg:border-r border-blue-400/30 bg-gradient-to-r from-[#164296] to-[#2563eb]">
+        <div class="flex items-center gap-2.5">
+          <span class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-white/15 border border-white/25 shadow-inner text-amber-300">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <rect x="4" y="4" width="16" height="16" rx="2" />
+              <rect x="9" y="9" width="6" height="6" />
+              <path d="M9 1v3M15 1v3M9 20v3M15 20v3M20 9h3M20 14h3M1 9h3M1 14h3" />
+            </svg>
+          </span>
+          <h1 class="text-base sm:text-lg md:text-xl font-bold tracking-tight drop-shadow-sm leading-snug">
+            <span class="kh-text text-amber-200">ធាតុផ្សំផ្ទៃមេ </span>(Motherboard) – Internal Components &amp; Functions
+          </h1>
+        </div>
+        <span class="text-[11px] sm:text-xs font-mono bg-blue-950/50 border border-blue-300/30 px-2.5 py-1 rounded-md text-blue-100">
+          Dell OptiPlex 3000 • Rev A00
+        </span>
+      </div>
+
+      <!-- Right 30% -->
+      <div class="lg:col-span-4 px-4 py-2.5 sm:py-3 flex items-center justify-between bg-gradient-to-r from-[#1e52b5] to-[#163e8c]">
+        <h2 class="text-sm sm:text-base md:text-lg font-bold tracking-tight text-white drop-shadow-sm">
+          <span class="kh-text text-amber-200">សមាសធាតុសំខាន់ៗ </span>(Main Components &amp; Functions)
+        </h2>
+        <span id="active-counter" class="text-xs font-semibold bg-white/15 px-2 py-0.5 rounded-full border border-white/20">
+          14 Parts
+        </span>
+      </div>
+    </header>
+
+    <!-- 2. MAIN CONTENT AREA: TWO-COLUMN SPLIT (Interactive Diagram Left + Reference Table Right) -->
+    <main class="grid grid-cols-1 lg:grid-cols-12 gap-2.5 p-2.5 bg-[#dce3ec]">
+
+      <!-- LEFT COLUMN (8 Cols ~ 67-70%): Interactive Motherboard Diagram -->
+      <section class="lg:col-span-8 flex flex-col gap-2">
+        <div class="relative w-full rounded-xl overflow-hidden border-2 border-slate-500/80 shadow-inner pcb-bg select-none" id="board-stage">
+          
+          <!-- Interactive Detail Inspector Floating Card (Appears when a component is hovered or selected) -->
+          <div id="inspector-card" class="hidden absolute bottom-2.5 left-2.5 right-2.5 sm:right-auto sm:max-w-md z-50 bg-slate-900/95 backdrop-blur-md text-white p-3 rounded-xl border border-amber-400/70 shadow-2xl transition-all duration-200">
+            <div class="flex items-start justify-between gap-2">
+              <div class="flex items-center gap-2">
+                <span id="inspector-dot" class="w-3.5 h-3.5 rounded-full shrink-0 border border-white"></span>
+                <div>
+                  <h3 id="inspector-title" class="text-sm font-bold text-amber-300 leading-tight">CPU (Central Processing Unit)</h3>
+                  <p id="inspector-subtitle" class="text-[11px] text-slate-300 font-medium">LGA 1700 Socket • Intel Core Series</p>
+                </div>
+              </div>
+              <button onclick="clearSelection()" title="Close" class="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-white/10 transition">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12"/></svg>
+              </button>
+            </div>
+            <p id="inspector-desc-kh" class="kh-text mt-2 text-xs text-slate-100 leading-relaxed border-t border-slate-700/80 pt-1.5"></p>
+            <p id="inspector-desc-en" class="mt-1 text-[11.5px] text-blue-200 leading-relaxed"></p>
+          </div>
+
+          <!-- SVG MOTHERBOARD ILLUSTRATION (Dell OptiPlex 3000 Style) -->
+          <svg id="motherboard-svg" viewBox="0 0 920 560" class="w-full h-auto block" role="img" aria-label="Dell OptiPlex 3000 Motherboard Diagram">
+            <defs>
+              <!-- Metallic Gradients -->
+              <linearGradient id="metalGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#f1f5f9"/>
+                <stop offset="45%" stop-color="#cbd5e1"/>
+                <stop offset="70%" stop-color="#94a3b8"/>
+                <stop offset="100%" stop-color="#e2e8f0"/>
+              </linearGradient>
+              <linearGradient id="goldPins" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#d97706"/>
+                <stop offset="50%" stop-color="#fbbf24"/>
+                <stop offset="100%" stop-color="#b45309"/>
+              </linearGradient>
+              <linearGradient id="heatsinkFin" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stop-color="#e2e8f0"/>
+                <stop offset="50%" stop-color="#94a3b8"/>
+                <stop offset="100%" stop-color="#475569"/>
+              </linearGradient>
+              <linearGradient id="nvmeBlue" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#1d4ed8"/>
+                <stop offset="60%" stop-color="#2563eb"/>
+                <stop offset="100%" stop-color="#1e40af"/>
+              </linearGradient>
+              <filter id="pcbShadow" x="-5%" y="-5%" width="110%" height="110%">
+                <feDropShadow dx="2" dy="4" stdDeviation="4" flood-color="#000000" flood-opacity="0.55"/>
+              </filter>
+            </defs>
+
+            <!-- Main Green PCB Substrate -->
+            <rect x="135" y="18" width="635" height="522" rx="10" fill="#154730" stroke="#34d399" stroke-width="2" filter="url(#pcbShadow)"/>
+            <!-- Inner PCB Traces & Silkscreen Lines -->
+            <g stroke="#22c55e" stroke-opacity="0.22" stroke-width="1.3" fill="none">
+              <path d="M180 80 H330 L355 105 H540"/>
+              <path d="M180 92 H322 L348 118 H540"/>
+              <path d="M475 180 H555 V390 H520"/>
+              <path d="M475 192 H545 V380 H520"/>
+              <path d="M350 280 V360 L325 385 H220"/>
+              <path d="M362 280 V366 L335 395 H220"/>
+              <path d="M580 120 H690 V310"/>
+              <path d="M595 130 H680 V310"/>
+              <circle cx="240" cy="480" r="18"/>
+              <circle cx="680" cy="495" r="22"/>
+            </g>
+
+            <!-- White Silkscreen Text on Motherboard -->
+            <g fill="#a7f3d0" fill-opacity="0.75" font-family="monospace" font-size="10" font-weight="bold">
+              <text x="355" y="346">DELL OPTIPLEX 3000</text>
+              <text x="355" y="358" font-size="8.5">IPCML-RN / LGA1700 DDR4</text>
+              <text x="562" y="318" font-size="8.5">DIMM1  DIMM2</text>
+              <text x="245" y="382" font-size="8">PCIEX1_1</text>
+              <text x="245" y="446" font-size="8">PCIEX16</text>
+            </g>
+
+            <!-- 13. REAR I/O PORTS BLOCK (Left edge protruding slightly like real board) -->
+            <g id="svg-io_ports" class="board-zone cursor-pointer" onclick="selectPart('io_ports')" onmouseenter="hoverPart('io_ports')" onmouseleave="unhoverPart()">
+              <!-- Metal Shield Housing -->
+              <rect x="115" y="65" width="52" height="335" rx="4" fill="url(#metalGrad)" stroke="#475569" stroke-width="2"/>
+              <!-- Audio Jacks Block -->
+              <rect x="119" y="75" width="42" height="48" rx="3" fill="#334155"/>
+              <circle cx="132" cy="88" r="5" fill="#ec4899" stroke="#cbd5e1" stroke-width="1.5"/>
+              <circle cx="148" cy="88" r="5" fill="#38bdf8" stroke="#cbd5e1" stroke-width="1.5"/>
+              <circle cx="140" cy="108" r="5.5" fill="#22c55e" stroke="#cbd5e1" stroke-width="1.5"/>
+              <!-- USB 3.0 Dual Stack -->
+              <rect x="118" y="132" width="44" height="52" rx="2" fill="#94a3b8" stroke="#334155"/>
+              <rect x="122" y="138" width="34" height="14" fill="#1e293b"/>
+              <rect x="124" y="142" width="30" height="5" fill="#2563eb"/>
+              <rect x="122" y="160" width="34" height="14" fill="#1e293b"/>
+              <rect x="124" y="164" width="30" height="5" fill="#2563eb"/>
+              <!-- RJ45 LAN + USB Stack -->
+              <rect x="118" y="194" width="44" height="64" rx="2" fill="#cbd5e1" stroke="#334155"/>
+              <rect x="122" y="200" width="34" height="24" fill="#0f172a"/>
+              <rect x="126" y="203" width="6" height="4" fill="#22c55e"/>
+              <rect x="146" y="203" width="6" height="4" fill="#f59e0b"/>
+              <rect x="122" y="232" width="34" height="18" fill="#1e293b"/>
+              <rect x="124" y="238" width="30" height="4" fill="#3b82f6"/>
+              <!-- HDMI / DisplayPort Block -->
+              <rect x="118" y="268" width="44" height="62" rx="2" fill="#94a3b8" stroke="#334155"/>
+              <rect x="123" y="275" width="32" height="16" rx="2" fill="#0f172a" stroke="#fbbf24" stroke-width="1"/>
+              <rect x="123" y="302" width="32" height="18" rx="2" fill="#0f172a" stroke="#cbd5e1" stroke-width="1"/>
+              <!-- USB 2.0 Stack -->
+              <rect x="118" y="338" width="44" height="52" rx="2" fill="#cbd5e1" stroke="#334155"/>
+              <rect x="123" y="345" width="32" height="14" fill="#0f172a"/>
+              <rect x="123" y="367" width="32" height="14" fill="#0f172a"/>
+            </g>
+
+            <!-- 12. CPU POWER 4/8-PIN CONNECTOR (Top Left) -->
+            <g id="svg-cpu_power" class="board-zone cursor-pointer" onclick="selectPart('cpu_power')" onmouseenter="hoverPart('cpu_power')" onmouseleave="unhoverPart()">
+              <rect x="205" y="32" width="58" height="32" rx="3" fill="#f8fafc" stroke="#334155" stroke-width="2"/>
+              <g fill="#1e293b" stroke="#64748b" stroke-width="1">
+                <rect x="211" y="37" width="10" height="10" rx="1"/>
+                <rect x="224" y="37" width="10" height="10" rx="1"/>
+                <rect x="237" y="37" width="10" height="10" rx="1"/>
+                <rect x="250" y="37" width="10" height="10" rx="1"/>
+                <rect x="211" y="50" width="10" height="10" rx="1"/>
+                <rect x="224" y="50" width="10" height="10" rx="1"/>
+                <rect x="237" y="50" width="10" height="10" rx="1"/>
+                <rect x="250" y="50" width="10" height="10" rx="1"/>
+              </g>
+            </g>
+
+            <!-- VRM Chokes & Capacitors around CPU -->
+            <g fill="#334155" stroke="#94a3b8" stroke-width="1">
+              <rect x="295" y="65" width="22" height="22" rx="2"/>
+              <rect x="325" y="65" width="22" height="22" rx="2"/>
+              <rect x="355" y="65" width="22" height="22" rx="2"/>
+              <rect x="385" y="65" width="22" height="22" rx="2"/>
+              <rect x="415" y="65" width="22" height="22" rx="2"/>
+              <rect x="275" y="110" width="22" height="22" rx="2"/>
+              <rect x="275" y="142" width="22" height="22" rx="2"/>
+              <rect x="275" y="174" width="22" height="22" rx="2"/>
+              <rect x="275" y="206" width="22" height="22" rx="2"/>
+            </g>
+            <!-- Solid Capacitors -->
+            <g fill="#e2e8f0" stroke="#475569" stroke-width="1.2">
+              <circle cx="305" cy="98" r="6"/><circle cx="325" cy="98" r="6"/><circle cx="345" cy="98" r="6"/>
+              <circle cx="365" cy="98" r="6"/><circle cx="385" cy="98" r="6"/><circle cx="405" cy="98" r="6"/>
+              <circle cx="308" cy="122" r="6"/><circle cx="308" cy="144" r="6"/><circle cx="308" cy="166" r="6"/>
+            </g>
+
+            <!-- 1. CPU SOCKET (LGA 1700 Metallic Retention Mechanism & IHS) -->
+            <g id="svg-cpu" class="board-zone cursor-pointer" onclick="selectPart('cpu')" onmouseenter="hoverPart('cpu')" onmouseleave="unhoverPart()">
+              <!-- Outer Black Socket Frame -->
+              <rect x="328" y="114" width="144" height="162" rx="6" fill="#1e293b" stroke="#64748b" stroke-width="2"/>
+              <!-- Metallic ILM Frame -->
+              <rect x="336" y="122" width="128" height="146" rx="4" fill="url(#metalGrad)" stroke="#475569" stroke-width="2"/>
+              <!-- Retention Lever Bar -->
+              <path d="M468 125 V268 L458 276" fill="none" stroke="#cbd5e1" stroke-width="4" stroke-linecap="round"/>
+              <!-- CPU Integrated Heat Spreader (IHS) -->
+              <rect x="352" y="138" width="96" height="114" rx="5" fill="#cbd5e1" stroke="#334155" stroke-width="2"/>
+              <rect x="360" y="148" width="80" height="94" rx="3" fill="#e2e8f0" stroke="#94a3b8" stroke-width="1"/>
+              <text x="400" y="192" text-anchor="middle" fill="#334155" font-family="sans-serif" font-size="13" font-weight="800">INTEL CORE</text>
+              <text x="400" y="208" text-anchor="middle" fill="#475569" font-family="monospace" font-size="10" font-weight="700">LGA 1700</text>
+              <!-- Corner Torx Screws -->
+              <circle cx="344" cy="130" r="4" fill="#475569"/>
+              <circle cx="456" cy="130" r="4" fill="#475569"/>
+              <circle cx="344" cy="260" r="4" fill="#475569"/>
+              <circle cx="456" cy="260" r="4" fill="#475569"/>
+            </g>
+
+            <!-- 2. RAM / DIMM SLOTS (2 Vertical DDR4 Slots) -->
+            <g id="svg-ram" class="board-zone cursor-pointer" onclick="selectPart('ram')" onmouseenter="hoverPart('ram')" onmouseleave="unhoverPart()">
+              <!-- Slot 1 -->
+              <rect x="522" y="48" width="22" height="252" rx="3" fill="#0f172a" stroke="#64748b" stroke-width="1.5"/>
+              <rect x="530" y="58" width="6" height="232" fill="url(#goldPins)"/>
+              <rect x="530" y="178" width="6" height="6" fill="#0f172a"/> <!-- Key Notch -->
+              <!-- Top & Bottom Latches -->
+              <rect x="519" y="36" width="28" height="14" rx="2" fill="#e2e8f0" stroke="#475569"/>
+              <rect x="519" y="298" width="28" height="14" rx="2" fill="#e2e8f0" stroke="#475569"/>
+
+              <!-- Slot 2 -->
+              <rect x="556" y="48" width="22" height="252" rx="3" fill="#0f172a" stroke="#64748b" stroke-width="1.5"/>
+              <rect x="564" y="58" width="6" height="232" fill="url(#goldPins)"/>
+              <rect x="564" y="178" width="6" height="6" fill="#0f172a"/> <!-- Key Notch -->
+              <!-- Top & Bottom Latches -->
+              <rect x="553" y="36" width="28" height="14" rx="2" fill="#e2e8f0" stroke="#475569"/>
+              <rect x="553" y="298" width="28" height="14" rx="2" fill="#e2e8f0" stroke="#475569"/>
+            </g>
+
+            <!-- 7. FAN CONTROLLER & PWM HEADER (Top Right Corner) -->
+            <g id="svg-fan_ctrl" class="board-zone cursor-pointer" onclick="selectPart('fan_ctrl')" onmouseenter="hoverPart('fan_ctrl')" onmouseleave="unhoverPart()">
+              <!-- ITE PWM Controller Chip -->
+              <rect x="615" y="42" width="38" height="38" rx="3" fill="#1e293b" stroke="#94a3b8" stroke-width="1.5"/>
+              <text x="634" y="60" text-anchor="middle" fill="#e2e8f0" font-family="monospace" font-size="8" font-weight="bold">ITE</text>
+              <text x="634" y="70" text-anchor="middle" fill="#94a3b8" font-family="monospace" font-size="6.5">IT8688E</text>
+              <!-- 4-Pin CPU_FAN Header -->
+              <rect x="668" y="46" width="36" height="16" rx="2" fill="#f8fafc" stroke="#334155" stroke-width="1.5"/>
+              <circle cx="674" cy="54" r="2" fill="#d97706"/>
+              <circle cx="682" cy="54" r="2" fill="#d97706"/>
+              <circle cx="690" cy="54" r="2" fill="#d97706"/>
+              <circle cx="698" cy="54" r="2" fill="#d97706"/>
+              <text x="686" y="73" text-anchor="middle" fill="#fde047" font-family="monospace" font-size="7.5" font-weight="bold">CPU_FAN</text>
+            </g>
+
+            <!-- 10. CMOS BATTERY (CR2032 Coin Cell on Right) -->
+            <g id="svg-cmos" class="board-zone cursor-pointer" onclick="selectPart('cmos')" onmouseenter="hoverPart('cmos')" onmouseleave="unhoverPart()">
+              <circle cx="655" cy="148" r="32" fill="#0f172a" stroke="#64748b" stroke-width="2"/>
+              <circle cx="655" cy="148" r="26" fill="url(#metalGrad)" stroke="#475569" stroke-width="1.5"/>
+              <text x="655" y="144" text-anchor="middle" fill="#1e293b" font-family="sans-serif" font-size="9" font-weight="800">CR2032</text>
+              <text x="655" y="156" text-anchor="middle" fill="#334155" font-family="monospace" font-size="8" font-weight="700">+ 3V</text>
+            </g>
+
+            <!-- 6. I/O CONTROLLER (Super I/O QFP Chip) -->
+            <g id="svg-super_io" class="board-zone cursor-pointer" onclick="selectPart('super_io')" onmouseenter="hoverPart('super_io')" onmouseleave="unhoverPart()">
+              <rect x="632" y="212" width="52" height="52" rx="3" fill="#1e293b" stroke="#cbd5e1" stroke-width="1.5"/>
+              <!-- IC Pins -->
+              <g stroke="#cbd5e1" stroke-width="1.5">
+                <path d="M638 207 v5 M646 207 v5 M654 207 v5 M662 207 v5 M670 207 v5 M678 207 v5"/>
+                <path d="M638 264 v5 M646 264 v5 M654 264 v5 M662 264 v5 M670 264 v5 M678 264 v5"/>
+                <path d="M627 218 h5 M627 226 h5 M627 234 h5 M627 242 h5 M627 250 h5 M627 258 h5"/>
+                <path d="M684 218 h5 M684 226 h5 M684 234 h5 M684 242 h5 M684 250 h5 M684 258 h5"/>
+              </g>
+              <text x="658" y="236" text-anchor="middle" fill="#f8fafc" font-family="monospace" font-size="7.5" font-weight="bold">NUVOTON</text>
+              <text x="658" y="246" text-anchor="middle" fill="#93c5fd" font-family="monospace" font-size="7">NCT6798D</text>
+            </g>
+
+            <!-- 11. INTERNAL HEADERS (24-Pin Power, Front Panel, USB Headers on Right Edge) -->
+            <g id="svg-headers" class="board-zone cursor-pointer" onclick="selectPart('headers')" onmouseenter="hoverPart('headers')" onmouseleave="unhoverPart()">
+              <!-- 24-pin ATX / Power Header -->
+              <rect x="716" y="135" width="26" height="115" rx="3" fill="#f8fafc" stroke="#334155" stroke-width="2"/>
+              <g fill="#1e293b">
+                <rect x="721" y="142" width="6" height="6"/><rect x="731" y="142" width="6" height="6"/>
+                <rect x="721" y="153" width="6" height="6"/><rect x="731" y="153" width="6" height="6"/>
+                <rect x="721" y="164" width="6" height="6"/><rect x="731" y="164" width="6" height="6"/>
+                <rect x="721" y="175" width="6" height="6"/><rect x="731" y="175" width="6" height="6"/>
+                <rect x="721" y="186" width="6" height="6"/><rect x="731" y="186" width="6" height="6"/>
+                <rect x="721" y="197" width="6" height="6"/><rect x="731" y="197" width="6" height="6"/>
+                <rect x="721" y="208" width="6" height="6"/><rect x="731" y="208" width="6" height="6"/>
+                <rect x="721" y="219" width="6" height="6"/><rect x="731" y="219" width="6" height="6"/>
+                <rect x="721" y="230" width="6" height="6"/><rect x="731" y="230" width="6" height="6"/>
+              </g>
+              <!-- Front Panel & USB 9-Pin Headers -->
+              <rect x="698" y="285" width="44" height="22" rx="2" fill="#2563eb" stroke="#93c5fd" stroke-width="1.5"/>
+              <rect x="698" y="315" width="44" height="20" rx="2" fill="#0f172a" stroke="#94a3b8" stroke-width="1.5"/>
+              <g fill="#fbbf24">
+                <circle cx="705" cy="292" r="1.8"/><circle cx="713" cy="292" r="1.8"/><circle cx="721" cy="292" r="1.8"/><circle cx="729" cy="292" r="1.8"/><circle cx="737" cy="292" r="1.8"/>
+                <circle cx="705" cy="300" r="1.8"/><circle cx="713" cy="300" r="1.8"/><circle cx="721" cy="300" r="1.8"/><circle cx="729" cy="300" r="1.8"/>
+              </g>
+            </g>
+
+            <!-- 9. SATA PORTS (Blue & Black L-Shaped SATA Connectors) -->
+            <g id="svg-sata" class="board-zone cursor-pointer" onclick="selectPart('sata')" onmouseenter="hoverPart('sata')" onmouseleave="unhoverPart()">
+              <rect x="605" y="352" width="28" height="44" rx="3" fill="#2563eb" stroke="#dbeafe" stroke-width="1.5"/>
+              <path d="M613 360 v28 h10" fill="none" stroke="#0f172a" stroke-width="3"/>
+              <rect x="640" y="352" width="28" height="44" rx="3" fill="#1e293b" stroke="#94a3b8" stroke-width="1.5"/>
+              <path d="M648 360 v28 h10" fill="none" stroke="#fbbf24" stroke-width="2.5"/>
+              <rect x="675" y="352" width="28" height="44" rx="3" fill="#1e293b" stroke="#94a3b8" stroke-width="1.5"/>
+              <path d="M683 360 v28 h10" fill="none" stroke="#fbbf24" stroke-width="2.5"/>
+            </g>
+
+            <!-- 3. ROM (BIOS / UEFI 8-Pin SOIC Flash Chip) -->
+            <g id="svg-rom" class="board-zone cursor-pointer" onclick="selectPart('rom')" onmouseenter="hoverPart('rom')" onmouseleave="unhoverPart()">
+              <rect x="615" y="422" width="36" height="28" rx="3" fill="#0f172a" stroke="#f97316" stroke-width="1.8"/>
+              <circle cx="621" cy="428" r="2" fill="#f97316"/>
+              <text x="633" y="438" text-anchor="middle" fill="#fed7aa" font-family="monospace" font-size="7" font-weight="bold">BIOS</text>
+              <g stroke="#cbd5e1" stroke-width="2">
+                <path d="M620 418 v4 M628 418 v4 M636 418 v4 M644 418 v4"/>
+                <path d="M620 450 v4 M628 450 v4 M636 450 v4 M644 450 v4"/>
+              </g>
+            </g>
+
+            <!-- 5. CHIPSET (PCH Silver Finned Heatsink) -->
+            <g id="svg-chipset" class="board-zone cursor-pointer" onclick="selectPart('chipset')" onmouseenter="hoverPart('chipset')" onmouseleave="unhoverPart()">
+              <rect x="475" y="405" width="115" height="92" rx="6" fill="url(#heatsinkFin)" stroke="#475569" stroke-width="2"/>
+              <!-- Heatsink Vertical Fins -->
+              <g stroke="#334155" stroke-width="2">
+                <line x1="487" y1="408" x2="487" y2="494"/>
+                <line x1="498" y1="408" x2="498" y2="494"/>
+                <line x1="509" y1="408" x2="509" y2="494"/>
+                <line x1="520" y1="408" x2="520" y2="494"/>
+                <line x1="531" y1="408" x2="531" y2="494"/>
+                <line x1="542" y1="408" x2="542" y2="494"/>
+                <line x1="553" y1="408" x2="553" y2="494"/>
+                <line x1="564" y1="408" x2="564" y2="494"/>
+                <line x1="575" y1="408" x2="575" y2="494"/>
+              </g>
+              <!-- Center Dell Badge Plate -->
+              <rect x="505" y="436" width="55" height="28" rx="4" fill="#1e293b" stroke="#cbd5e1" stroke-width="1"/>
+              <text x="532" y="454" text-anchor="middle" fill="#f8fafc" font-family="sans-serif" font-size="10" font-weight="800" letter-spacing="1">PCH</text>
+              <!-- Spring Push-Pins -->
+              <circle cx="483" cy="413" r="4" fill="#1e293b" stroke="#f8fafc"/>
+              <circle cx="582" cy="489" r="4" fill="#1e293b" stroke="#f8fafc"/>
+            </g>
+
+            <!-- 4. SSD (M.2 NVMe Slot with Blue ADATA-style NVMe Drive) -->
+            <g id="svg-ssd" class="board-zone cursor-pointer" onclick="selectPart('ssd')" onmouseenter="hoverPart('ssd')" onmouseleave="unhoverPart()">
+              <!-- M.2 Socket Connector -->
+              <rect x="466" y="314" width="16" height="46" rx="2" fill="#0f172a" stroke="#94a3b8" stroke-width="1.5"/>
+              <!-- Blue NVMe PCB Stick -->
+              <rect x="292" y="317" width="176" height="40" rx="3" fill="url(#nvmeBlue)" stroke="#93c5fd" stroke-width="1.5"/>
+              <!-- NAND Flash & Controller Chips on SSD -->
+              <rect x="415" y="323" width="24" height="28" rx="2" fill="#1e293b"/>
+              <rect x="368" y="322" width="38" height="30" rx="2" fill="#0f172a"/>
+              <rect x="320" y="322" width="38" height="30" rx="2" fill="#0f172a"/>
+              <text x="339" y="340" text-anchor="middle" fill="#60a5fa" font-family="sans-serif" font-size="8.5" font-weight="800">NVMe</text>
+              <text x="387" y="340" text-anchor="middle" fill="#e2e8f0" font-family="monospace" font-size="7.5">M.2 SSD</text>
+              <!-- Mounting Standoff Screw on Left -->
+              <circle cx="294" cy="337" r="6" fill="#cbd5e1" stroke="#334155" stroke-width="1.5"/>
+              <path d="M291 337 h6 M294 334 v6" stroke="#334155" stroke-width="1.2"/>
+            </g>
+
+            <!-- 8a. PCIe x1 EXPANSION SLOT -->
+            <g id="svg-pcie_x1" class="board-zone cursor-pointer" onclick="selectPart('pcie')" onmouseenter="hoverPart('pcie')" onmouseleave="unhoverPart()">
+              <rect x="242" y="392" width="76" height="18" rx="2" fill="#0f172a" stroke="#60a5fa" stroke-width="1.5"/>
+              <line x1="248" y1="401" x2="312" y2="401" stroke="url(#goldPins)" stroke-width="3" stroke-dasharray="3 2"/>
+              <rect x="262" y="392" width="5" height="18" fill="#154730"/>
+            </g>
+
+            <!-- 8b. PCIe x16 SLOT (Blue Full-Length GPU Slot) -->
+            <g id="svg-pcie_x16" class="board-zone cursor-pointer" onclick="selectPart('pcie')" onmouseenter="hoverPart('pcie')" onmouseleave="unhoverPart()">
+              <rect x="235" y="454" width="225" height="22" rx="3" fill="#1d4ed8" stroke="#93c5fd" stroke-width="1.8"/>
+              <line x1="242" y1="465" x2="444" y2="465" stroke="url(#goldPins)" stroke-width="3.5" stroke-dasharray="3 2"/>
+              <rect x="275" y="454" width="6" height="22" fill="#0f172a"/>
+              <!-- Retention Clip on Right -->
+              <path d="M460 452 h12 l4 13 l-4 13 h-12 z" fill="#60a5fa" stroke="#1e3a8a" stroke-width="1.5"/>
+            </g>
+
+            <!-- 14. MOUNTING HOLES (Copper-Ringed Screw Holes at Corners) -->
+            <g id="svg-mounting" class="board-zone cursor-pointer" onclick="selectPart('mounting')" onmouseenter="hoverPart('mounting')" onmouseleave="unhoverPart()">
+              <!-- Bottom Left Mounting Hole -->
+              <circle cx="164" cy="512" r="11" fill="#d97706" stroke="#fef08a" stroke-width="1.5"/>
+              <circle cx="164" cy="512" r="5.5" fill="#0b1f15"/>
+              <!-- Top Left Mounting Hole -->
+              <circle cx="164" cy="42" r="10" fill="#d97706" stroke="#fef08a" stroke-width="1.5"/>
+              <circle cx="164" cy="42" r="5" fill="#0b1f15"/>
+              <!-- Top Right Mounting Hole -->
+              <circle cx="744" cy="42" r="10" fill="#d97706" stroke="#fef08a" stroke-width="1.5"/>
+              <circle cx="744" cy="42" r="5" fill="#0b1f15"/>
+              <!-- Bottom Right Mounting Hole -->
+              <circle cx="744" cy="512" r="10" fill="#d97706" stroke="#fef08a" stroke-width="1.5"/>
+              <circle cx="744" cy="512" r="5" fill="#0b1f15"/>
+            </g>
+
+            <!-- SVG LEADER LINES CONNECTING BADGES TO COMPONENTS -->
+            <g id="leader-lines" stroke-width="2" fill="none" stroke-linecap="round">
+              <!-- CPU Power -->
+              <polyline points="175,48 205,48" stroke="#facc15"/>
+              <circle cx="205" cy="48" r="3.5" fill="#facc15"/>
+              <!-- I/O Ports -->
+              <polyline points="92,185 118,185" stroke="#c084fc"/>
+              <circle cx="118" cy="185" r="3.5" fill="#c084fc"/>
+              <!-- CPU -->
+              <polyline points="295,212 348,212" stroke="#f87171"/>
+              <circle cx="348" cy="212" r="3.5" fill="#f87171"/>
+              <!-- SSD -->
+              <polyline points="260,337 292,337" stroke="#4ade80"/>
+              <circle cx="292" cy="337" r="3.5" fill="#4ade80"/>
+              <!-- PCIe x1 -->
+              <polyline points="180,401 242,401" stroke="#60a5fa"/>
+              <circle cx="242" cy="401" r="3.5" fill="#60a5fa"/>
+              <!-- PCIe x16 -->
+              <polyline points="180,465 235,465" stroke="#60a5fa"/>
+              <circle cx="235" cy="465" r="3.5" fill="#60a5fa"/>
+              <!-- Mounting Hole -->
+              <polyline points="125,512 156,512" stroke="#c084fc"/>
+              <circle cx="156" cy="512" r="3.5" fill="#c084fc"/>
+
+              <!-- RAM -->
+              <polyline points="565,30 565,48" stroke="#facc15"/>
+              <circle cx="565" cy="48" r="3.5" fill="#facc15"/>
+              <!-- Fan Controller -->
+              <polyline points="755,58 704,58" stroke="#f472b6"/>
+              <circle cx="704" cy="58" r="3.5" fill="#f472b6"/>
+              <!-- CMOS Battery -->
+              <polyline points="755,148 685,148" stroke="#a78bfa"/>
+              <circle cx="685" cy="148" r="3.5" fill="#a78bfa"/>
+              <!-- Super I/O -->
+              <polyline points="755,238 686,238" stroke="#60a5fa"/>
+              <circle cx="686" cy="238" r="3.5" fill="#60a5fa"/>
+              <!-- Internal Headers -->
+              <polyline points="755,302 742,302" stroke="#60a5fa"/>
+              <circle cx="742" cy="302" r="3.5" fill="#60a5fa"/>
+              <!-- SATA Port -->
+              <polyline points="755,374 703,374" stroke="#60a5fa"/>
+              <circle cx="703" cy="374" r="3.5" fill="#60a5fa"/>
+              <!-- ROM BIOS -->
+              <polyline points="755,436 651,436" stroke="#fb923c"/>
+              <circle cx="651" cy="436" r="3.5" fill="#fb923c"/>
+              <!-- Chipset -->
+              <polyline points="755,495 590,468" stroke="#c084fc"/>
+              <circle cx="590" cy="468" r="3.5" fill="#c084fc"/>
+            </g>
+          </svg>
+
+          <!-- OVERLAID HTML CALLOUT BADGES (Responsive % Positioning matching Screenshot) -->
+          <div id="badges-overlay" class="absolute inset-0 pointer-events-none">
+            <!-- Left Side Badges -->
+            <button data-part="cpu_power" style="top: 3.5%; left: 3.5%;" class="hotspot-badge pointer-events-auto absolute px-2 py-1 rounded-lg bg-amber-400/95 text-slate-950 border-2 border-amber-100 shadow-lg text-left leading-tight">
+              <div class="kh-text text-[10px] sm:text-[11px] font-extrabold">រន្ធថាមពល CPU</div>
+              <div class="text-[9.5px] sm:text-[10.5px] font-bold">(CPU Power 4/8-pin)</div>
+            </button>
+
+            <button data-part="io_ports" style="top: 26%; left: 1.5%;" class="hotspot-badge pointer-events-auto absolute px-2 py-1 rounded-lg bg-purple-700/95 text-white border-2 border-purple-300 shadow-lg text-center leading-tight">
+              <div class="text-[11px] sm:text-xs font-extrabold">I/O Ports</div>
+              <div class="text-[8.5px] sm:text-[9.5px] text-purple-100">(USB, HDMI/DP,<br/>LAN, Audio)</div>
+            </button>
+
+            <button data-part="cpu" style="top: 34.5%; left: 18%;" class="hotspot-badge pointer-events-auto absolute px-2.5 py-1 rounded-lg bg-red-600/95 text-white border-2 border-red-200 shadow-lg text-center leading-tight">
+              <div class="text-xs sm:text-sm font-extrabold">CPU</div>
+              <div class="text-[8.5px] sm:text-[9.5px] text-red-100">(Central Processing Unit)</div>
+            </button>
+
+            <button data-part="ssd" style="top: 56.5%; left: 15.5%;" class="hotspot-badge pointer-events-auto absolute px-2 py-1 rounded-lg bg-emerald-600/95 text-white border-2 border-emerald-200 shadow-lg text-center leading-tight">
+              <div class="text-[10.5px] sm:text-xs font-extrabold">SSD (M.2 NVMe)</div>
+              <div class="text-[8.5px] sm:text-[9.5px] text-emerald-100">(Solid State Drive)</div>
+            </button>
+
+            <button data-part="pcie" style="top: 68.5%; left: 7.5%;" class="hotspot-badge pointer-events-auto absolute px-2 py-1 rounded-lg bg-blue-600/95 text-white border-2 border-blue-200 shadow-lg text-center leading-tight">
+              <div class="text-[10.5px] sm:text-xs font-extrabold">PCIe x1</div>
+              <div class="text-[8.5px] sm:text-[9.5px] text-blue-100">(Expansion Slot)</div>
+            </button>
+
+            <button data-part="pcie" style="top: 79.5%; left: 4.5%;" class="hotspot-badge pointer-events-auto absolute px-2 py-1 rounded-lg bg-blue-700/95 text-white border-2 border-blue-200 shadow-lg text-center leading-tight">
+              <div class="text-[10.5px] sm:text-xs font-extrabold">PCIe x16</div>
+              <div class="text-[8.5px] sm:text-[9.5px] text-blue-100">(For GPU / High-Speed Card)</div>
+            </button>
+
+            <button data-part="mounting" style="top: 89.5%; left: 1.5%;" class="hotspot-badge pointer-events-auto absolute px-2 py-0.5 rounded-lg bg-purple-800/95 text-white border-2 border-purple-300 shadow-lg text-center leading-tight">
+              <div class="text-[9.5px] sm:text-[10.5px] font-bold"><span class="kh-text">រន្ធវីស </span>(Mounting Hole)</div>
+              <div class="kh-text text-[8.5px] text-purple-200">(ភ្ជាប់នឹង Case)</div>
+            </button>
+
+            <!-- Top & Right Side Badges -->
+            <button data-part="ram" style="top: 2%; left: 56%;" class="hotspot-badge pointer-events-auto absolute px-2 py-0.5 rounded-lg bg-amber-400/95 text-slate-950 border-2 border-amber-100 shadow-lg text-center leading-tight">
+              <div class="text-[10.5px] sm:text-xs font-extrabold"><span class="kh-text">រន្ធ </span>RAM</div>
+              <div class="text-[8.5px] sm:text-[9.5px] font-bold">(RAM / DIMM Slots)</div>
+            </button>
+
+            <button data-part="fan_ctrl" style="top: 3%; right: 1.5%;" class="hotspot-badge pointer-events-auto absolute px-2 py-0.5 rounded-lg bg-pink-600/95 text-white border-2 border-pink-200 shadow-lg text-center leading-tight">
+              <div class="kh-text text-[10px] font-extrabold">ឈីបគ្រប់គ្រងកង្ហារ</div>
+              <div class="text-[8.5px] sm:text-[9.5px] text-pink-100">(Fan Controller / PWM)</div>
+            </button>
+
+            <button data-part="cmos" style="top: 20.5%; right: 1.5%;" class="hotspot-badge pointer-events-auto absolute px-2 py-1 rounded-lg bg-indigo-600/95 text-white border-2 border-indigo-200 shadow-lg text-center leading-tight">
+              <div class="text-[10.5px] sm:text-xs font-extrabold">CMOS Battery</div>
+              <div class="text-[8.5px] sm:text-[9.5px] text-indigo-100">(RTC Battery)</div>
+            </button>
+
+            <button data-part="super_io" style="top: 36.5%; right: 1.5%;" class="hotspot-badge pointer-events-auto absolute px-2 py-1 rounded-lg bg-blue-600/95 text-white border-2 border-blue-200 shadow-lg text-center leading-tight">
+              <div class="text-[10.5px] sm:text-xs font-extrabold">I/O Controller</div>
+              <div class="text-[8.5px] sm:text-[9.5px] text-blue-100">(Super I/O)</div>
+            </button>
+
+            <button data-part="headers" style="top: 49.5%; right: 1.5%;" class="hotspot-badge pointer-events-auto absolute px-2 py-1 rounded-lg bg-sky-600/95 text-white border-2 border-sky-200 shadow-lg text-center leading-tight">
+              <div class="text-[10px] sm:text-[11px] font-extrabold">Internal Headers</div>
+              <div class="text-[8px] sm:text-[9px] text-sky-100">(USB, Front Panel, Fan, etc.)</div>
+            </button>
+
+            <button data-part="sata" style="top: 63.5%; right: 1.5%;" class="hotspot-badge pointer-events-auto absolute px-2 py-1 rounded-lg bg-blue-700/95 text-white border-2 border-blue-200 shadow-lg text-center leading-tight">
+              <div class="text-[10.5px] sm:text-xs font-extrabold">SATA Port</div>
+              <div class="text-[8.5px] sm:text-[9.5px] text-blue-100">(For SSD/HDD)</div>
+            </button>
+
+            <button data-part="rom" style="top: 74.5%; right: 1.5%;" class="hotspot-badge pointer-events-auto absolute px-2 py-1 rounded-lg bg-orange-600/95 text-white border-2 border-orange-200 shadow-lg text-center leading-tight">
+              <div class="text-[10px] sm:text-[11px] font-extrabold">ROM (BIOS/UEFI)</div>
+              <div class="text-[8.5px] sm:text-[9.5px] text-orange-100">(Flash Memory)</div>
+            </button>
+
+            <button data-part="chipset" style="top: 86.5%; right: 1.5%;" class="hotspot-badge pointer-events-auto absolute px-2.5 py-1 rounded-lg bg-purple-700/95 text-white border-2 border-purple-200 shadow-lg text-center leading-tight">
+              <div class="text-[10.5px] sm:text-xs font-extrabold">Chipset</div>
+              <div class="text-[8.5px] sm:text-[9.5px] text-purple-100">(Platform Controller Hub)</div>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- RIGHT COLUMN (4 Cols ~ 30-33%): Main Components & Functions Reference Panel -->
+      <aside class="lg:col-span-4 bg-white rounded-xl border border-slate-300 shadow-sm flex flex-col overflow-hidden max-h-[560px]">
+        <div id="components-list" class="divide-y divide-slate-200 overflow-y-auto custom-scroll flex-1">
+          <!-- Populated dynamically via JavaScript for full synchronization -->
+        </div>
+      </aside>
+    </main>
+
+    <!-- 3. BOTTOM THREE-PANEL SECTION -->
+    <section class="grid grid-cols-1 lg:grid-cols-12 gap-2.5 px-2.5 pb-2.5 bg-[#dce3ec]">
+
+      <!-- BOTTOM LEFT CARD (4 Cols): Rear I/O Ports (ផ្នែកខាងក្រោយ) -->
+      <div class="lg:col-span-4 bg-white rounded-xl border border-slate-300 shadow-sm overflow-hidden flex flex-col">
+        <div class="bg-gradient-to-r from-[#2258b8] to-[#3b82f6] text-white px-3 py-1.5 font-bold text-xs sm:text-sm flex items-center justify-between">
+          <span>Rear I/O Ports <span class="kh-text font-normal text-blue-100">(ផ្នែកខាងក្រោយ)</span></span>
+          <button onclick="selectPart('io_ports')" class="text-[10px] bg-white/20 hover:bg-white/30 px-2 py-0.5 rounded transition">Inspect</button>
+        </div>
+        <div class="p-2.5 flex-1 flex flex-col justify-center bg-slate-50">
+          <!-- Visual Horizontal Rear I/O Panel Graphic -->
+          <div class="grid grid-cols-5 gap-1.5 items-end text-center">
+            <!-- USB 2.0 -->
+            <div onclick="selectPart('io_ports')" class="cursor-pointer group flex flex-col items-center">
+              <div class="w-full h-14 bg-slate-300 border border-slate-500 rounded-md p-1.5 flex flex-col justify-between shadow-inner group-hover:ring-2 ring-blue-500">
+                <div class="h-4 bg-slate-900 rounded-xs border border-slate-600 flex items-center justify-center"><div class="w-4/5 h-1 bg-slate-400"></div></div>
+                <div class="h-4 bg-slate-900 rounded-xs border border-slate-600 flex items-center justify-center"><div class="w-4/5 h-1 bg-slate-400"></div></div>
+              </div>
+              <span class="mt-1 text-[10px] font-bold text-slate-800 leading-tight">USB 2.0</span>
+              <span class="text-[9px] text-slate-500">(Black)</span>
+            </div>
+
+            <!-- HDMI / DisplayPort -->
+            <div onclick="selectPart('io_ports')" class="cursor-pointer group flex flex-col items-center">
+              <div class="w-full h-14 bg-slate-300 border border-slate-500 rounded-md p-1.5 flex flex-col justify-between shadow-inner group-hover:ring-2 ring-blue-500">
+                <div class="h-4 bg-slate-950 rounded-xs border border-amber-400 flex items-center justify-center"><div class="w-3/4 h-1 bg-amber-300"></div></div>
+                <div class="h-4 bg-slate-950 rounded-xs border border-slate-500 flex items-center justify-center"><div class="w-3/4 h-1 bg-slate-300"></div></div>
+              </div>
+              <span class="mt-1 text-[10px] font-bold text-slate-800 leading-tight">HDMI / DP</span>
+              <span class="text-[9px] text-slate-500">(Video Out)</span>
+            </div>
+
+            <!-- LAN RJ45 -->
+            <div onclick="selectPart('io_ports')" class="cursor-pointer group flex flex-col items-center">
+              <div class="w-full h-14 bg-slate-300 border border-slate-500 rounded-md p-1.5 flex flex-col justify-between shadow-inner group-hover:ring-2 ring-blue-500">
+                <div class="h-6 bg-slate-900 rounded-xs border border-slate-600 flex items-start justify-between px-1 pt-0.5">
+                  <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                  <span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
+                </div>
+                <div class="h-3.5 bg-slate-900 rounded-xs flex items-center justify-center"><div class="w-4/5 h-1 bg-blue-500"></div></div>
+              </div>
+              <span class="mt-1 text-[10px] font-bold text-slate-800 leading-tight">LAN (RJ45)</span>
+              <span class="text-[9px] text-slate-500">(Ethernet)</span>
+            </div>
+
+            <!-- USB 3.0 -->
+            <div onclick="selectPart('io_ports')" class="cursor-pointer group flex flex-col items-center">
+              <div class="w-full h-14 bg-slate-300 border border-slate-500 rounded-md p-1.5 flex flex-col justify-between shadow-inner group-hover:ring-2 ring-blue-500">
+                <div class="h-4 bg-slate-900 rounded-xs border border-blue-400 flex items-center justify-center"><div class="w-4/5 h-1.5 bg-blue-500"></div></div>
+                <div class="h-4 bg-slate-900 rounded-xs border border-blue-400 flex items-center justify-center"><div class="w-4/5 h-1.5 bg-blue-500"></div></div>
+              </div>
+              <span class="mt-1 text-[10px] font-bold text-blue-700 leading-tight">USB 3.0</span>
+              <span class="text-[9px] text-slate-500">(Blue)</span>
+            </div>
+
+            <!-- Audio Jacks -->
+            <div onclick="selectPart('io_ports')" class="cursor-pointer group flex flex-col items-center">
+              <div class="w-full h-14 bg-slate-300 border border-slate-500 rounded-md p-1 flex flex-col items-center justify-around shadow-inner group-hover:ring-2 ring-blue-500">
+                <span class="w-3.5 h-3.5 rounded-full bg-sky-400 border-2 border-slate-800"></span>
+                <span class="w-3.5 h-3.5 rounded-full bg-emerald-500 border-2 border-slate-800"></span>
+                <span class="w-3.5 h-3.5 rounded-full bg-pink-500 border-2 border-slate-800"></span>
+              </div>
+              <span class="mt-1 text-[10px] font-bold text-slate-800 leading-tight">Audio</span>
+              <span class="text-[9px] text-slate-500">(Line/Mic)</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- BOTTOM MIDDLE CARD (4 Cols): Data Flow (លំហូរទិន្នន័យក្នុងប្រព័ន្ធ) -->
+      <div class="lg:col-span-4 bg-white rounded-xl border border-slate-300 shadow-sm overflow-hidden flex flex-col">
+        <div class="bg-gradient-to-r from-[#2258b8] to-[#3b82f6] text-white px-3 py-1.5 font-bold text-xs sm:text-sm flex items-center justify-between">
+          <span>Data Flow <span class="kh-text font-normal text-blue-100">(លំហូរទិន្នន័យក្នុងប្រព័ន្ធ)</span></span>
+          <span class="text-[10px] font-mono bg-blue-900/50 px-1.5 py-0.5 rounded">System Bus</span>
+        </div>
+        <div class="p-2.5 flex-1 flex flex-col justify-center items-center bg-slate-50">
+          <!-- Interactive SVG Architecture Bus Diagram -->
+          <svg viewBox="0 0 420 120" class="w-full h-auto max-h-[125px]">
+            <!-- Bidirectional Connecting Lines -->
+            <g stroke="#2563eb" stroke-width="2.5">
+              <!-- Storage <-> Chipset -->
+              <line x1="88" y1="36" x2="124" y2="36" class="flow-line-animated"/>
+              <!-- Chipset <-> CPU -->
+              <line x1="204" y1="36" x2="240" y2="36" class="flow-line-animated"/>
+              <!-- CPU <-> RAM -->
+              <line x1="316" y1="36" x2="348" y2="36" class="flow-line-animated"/>
+              <!-- Chipset <-> Bottom I/O Bus -->
+              <line x1="164" y1="62" x2="164" y2="82" class="flow-line-animated"/>
+            </g>
+
+            <!-- Node 1: Storage (SSD/HDD) -->
+            <g onclick="selectPart('ssd')" class="cursor-pointer">
+              <rect x="6" y="14" width="82" height="44" rx="8" fill="#dbeafe" stroke="#2563eb" stroke-width="2"/>
+              <text x="47" y="33" text-anchor="middle" fill="#1e3a8a" font-size="10.5" font-weight="800">Storage</text>
+              <text x="47" y="46" text-anchor="middle" fill="#3b82f6" font-size="8.5" font-weight="600">(SSD/HDD)</text>
+            </g>
+
+            <!-- Node 2: Chipset (Controller) -->
+            <g onclick="selectPart('chipset')" class="cursor-pointer">
+              <rect x="124" y="14" width="80" height="44" rx="8" fill="#f3e8ff" stroke="#7e22ce" stroke-width="2"/>
+              <text x="164" y="33" text-anchor="middle" fill="#581c87" font-size="10.5" font-weight="800">Chipset</text>
+              <text x="164" y="46" text-anchor="middle" fill="#7e22ce" font-size="8.5" font-weight="600">(Controller)</text>
+            </g>
+
+            <!-- Node 3: CPU (Processing) -->
+            <g onclick="selectPart('cpu')" class="cursor-pointer">
+              <rect x="240" y="14" width="76" height="44" rx="8" fill="#fee2e2" stroke="#dc2626" stroke-width="2"/>
+              <text x="278" y="33" text-anchor="middle" fill="#7f1d1d" font-size="11" font-weight="800">CPU</text>
+              <text x="278" y="46" text-anchor="middle" fill="#dc2626" font-size="8.5" font-weight="600">(Processing)</text>
+            </g>
+
+            <!-- Node 4: RAM (Memory) -->
+            <g onclick="selectPart('ram')" class="cursor-pointer">
+              <rect x="348" y="14" width="66" height="44" rx="8" fill="#dcfce7" stroke="#16a34a" stroke-width="2"/>
+              <text x="381" y="33" text-anchor="middle" fill="#14532d" font-size="11" font-weight="800">RAM</text>
+              <text x="381" y="46" text-anchor="middle" fill="#16a34a" font-size="8.5" font-weight="600">(Memory)</text>
+            </g>
+
+            <!-- Bottom Bus Bar: PCIe / SATA / USB / LAN -->
+            <g onclick="selectPart('pcie')" class="cursor-pointer">
+              <rect x="44" y="82" width="330" height="32" rx="8" fill="#e0f2fe" stroke="#0284c7" stroke-width="1.8"/>
+              <text x="209" y="96" text-anchor="middle" fill="#0369a1" font-size="10" font-weight="800">PCIe / SATA / USB / LAN</text>
+              <text x="209" y="108" text-anchor="middle" fill="#0284c7" font-size="8.5" font-weight="600">(I/O &amp; Expansion Bus)</text>
+            </g>
+          </svg>
+        </div>
+      </div>
+
+      <!-- BOTTOM RIGHT CARD (4 Cols): Additional Controller Chips (បន្ទះឈីបត្រួតពិនិត្យផ្សេងៗ) -->
+      <div class="lg:col-span-4 bg-white rounded-xl border border-slate-300 shadow-sm overflow-hidden flex flex-col">
+        <div class="bg-gradient-to-r from-[#2258b8] to-[#3b82f6] text-white px-3 py-1.5 font-bold text-xs sm:text-sm">
+          <span class="kh-text">បន្ទះឈីបត្រួតពិនិត្យផ្សេងៗ </span>(Additional Controller Chips)
+        </div>
+        <div class="p-2 grid grid-cols-3 gap-2 flex-1 bg-slate-50">
+          
+          <!-- Chip 1: ROM (BIOS/UEFI Chip) -->
+          <div onclick="selectPart('rom')" data-chip="rom" class="chip-card cursor-pointer bg-amber-50/90 hover:bg-amber-100 border border-amber-300 rounded-lg p-1.5 flex flex-col items-center text-center transition shadow-xs">
+            <div class="w-full h-11 bg-[#14432a] rounded flex items-center justify-center mb-1 relative overflow-hidden">
+              <!-- SOIC-8 Chip SVG -->
+              <svg class="w-12 h-9" viewBox="0 0 60 44">
+                <g stroke="#cbd5e1" stroke-width="2"><line x1="18" y1="4" x2="18" y2="40"/><line x1="26" y1="4" x2="26" y2="40"/><line x1="34" y1="4" x2="34" y2="40"/><line x1="42" y1="4" x2="42" y2="40"/></g>
+                <rect x="12" y="10" width="36" height="24" rx="2" fill="#0f172a" stroke="#64748b"/>
+                <text x="30" y="21" text-anchor="middle" fill="#f8fafc" font-family="monospace" font-size="6.5" font-weight="bold">MXIC</text>
+                <text x="30" y="29" text-anchor="middle" fill="#94a3b8" font-family="monospace" font-size="5.5">25L12873F</text>
+              </svg>
+            </div>
+            <div class="text-[9.5px] font-extrabold text-orange-800 leading-tight">ROM (BIOS/UEFI)</div>
+            <div class="text-[8.5px] text-slate-700 mt-0.5 leading-tight"><span class="kh-text">ឧទាហរណ៍: </span>MXIC 25L12873F (128 Mbit)</div>
+          </div>
+
+          <!-- Chip 2: I/O Controller (Super I/O) -->
+          <div onclick="selectPart('super_io')" data-chip="super_io" class="chip-card cursor-pointer bg-sky-50/90 hover:bg-sky-100 border border-sky-300 rounded-lg p-1.5 flex flex-col items-center text-center transition shadow-xs">
+            <div class="w-full h-11 bg-[#14432a] rounded flex items-center justify-center mb-1">
+              <!-- QFP-128 Chip SVG -->
+              <svg class="w-12 h-9" viewBox="0 0 60 44">
+                <g stroke="#cbd5e1" stroke-width="1.2">
+                  <line x1="20" y1="3" x2="20" y2="41"/><line x1="25" y1="3" x2="25" y2="41"/><line x1="30" y1="3" x2="30" y2="41"/><line x1="35" y1="3" x2="35" y2="41"/><line x1="40" y1="3" x2="40" y2="41"/>
+                  <line x1="12" y1="12" x2="48" y2="12"/><line x1="12" y1="17" x2="48" y2="17"/><line x1="12" y1="22" x2="48" y2="22"/><line x1="12" y1="27" x2="48" y2="27"/><line x1="12" y1="32" x2="48" y2="32"/>
+                </g>
+                <rect x="16" y="8" width="28" height="28" rx="2" fill="#0f172a" stroke="#94a3b8"/>
+                <text x="30" y="21" text-anchor="middle" fill="#f8fafc" font-family="monospace" font-size="5.5" font-weight="bold">nuvoton</text>
+                <text x="30" y="29" text-anchor="middle" fill="#60a5fa" font-family="monospace" font-size="5">NCT6798D</text>
+              </svg>
+            </div>
+            <div class="text-[9.5px] font-extrabold text-blue-800 leading-tight">I/O Controller</div>
+            <div class="text-[8.5px] text-slate-700 mt-0.5 leading-tight">Nuvoton NCT6798D <span class="kh-text">(Fan, Temp, Voltage)</span></div>
+          </div>
+
+          <!-- Chip 3: Fan Controller (PWM) -->
+          <div onclick="selectPart('fan_ctrl')" data-chip="fan_ctrl" class="chip-card cursor-pointer bg-rose-50/90 hover:bg-rose-100 border border-rose-300 rounded-lg p-1.5 flex flex-col items-center text-center transition shadow-xs">
+            <div class="w-full h-11 bg-[#14432a] rounded flex items-center justify-center mb-1">
+              <!-- QFP PWM Chip SVG -->
+              <svg class="w-12 h-9" viewBox="0 0 60 44">
+                <g stroke="#fbbf24" stroke-width="1.2">
+                  <line x1="21" y1="4" x2="21" y2="40"/><line x1="27" y1="4" x2="27" y2="40"/><line x1="33" y1="4" x2="33" y2="40"/><line x1="39" y1="4" x2="39" y2="40"/>
+                  <line x1="13" y1="14" x2="47" y2="14"/><line x1="13" y1="22" x2="47" y2="22"/><line x1="13" y1="30" x2="47" y2="30"/>
+                </g>
+                <rect x="17" y="9" width="26" height="26" rx="2" fill="#1e293b" stroke="#fbbf24"/>
+                <text x="30" y="21" text-anchor="middle" fill="#fde047" font-family="monospace" font-size="6.5" font-weight="bold">ITE</text>
+                <text x="30" y="29" text-anchor="middle" fill="#f8fafc" font-family="monospace" font-size="5">IT8688E</text>
+              </svg>
+            </div>
+            <div class="text-[9.5px] font-extrabold text-rose-800 leading-tight">Fan Controller (PWM)</div>
+            <div class="text-[8.5px] text-slate-700 mt-0.5 leading-tight">ITE IT8688E <span class="kh-text">(គ្រប់គ្រងល្បឿនកង្ហារ)</span></div>
+          </div>
+
+        </div>
+      </div>
+
+    </section>
+
+    <!-- 4. BOTTOM DARK INTERACTIVE FOOTER BAR -->
+    <footer class="bg-[#232b38] text-slate-200 px-3.5 py-2.5 flex flex-wrap items-center justify-between gap-3 border-t border-slate-600">
+      <!-- Left: Helper Instructions & Guided Tour Button -->
+      <div class="flex flex-wrap items-center gap-3 text-xs sm:text-[13px]">
+        <span class="text-slate-300 flex items-center gap-1.5">
+          <svg class="w-4 h-4 text-amber-400 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5"/>
+          </svg>
+          <span class="kh-text">ដាក់ Mouse លើផ្នែកណាមួយដើម្បីមើលការពន្យល់ | ចុចដើម្បីជ្រើសរើស</span>
+          <span class="hidden sm:inline text-slate-400">• Hover or click any part</span>
+        </span>
+
+        <button id="tour-btn" onclick="toggleTour()" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-blue-600 hover:bg-blue-500 active:scale-95 text-white font-semibold shadow transition cursor-pointer">
+          <span id="tour-icon">▶</span>
+          <span id="tour-label"><span class="kh-text">ដើម្បីទស្សនាទាំងអស់ </span>(Tour)</span>
+        </button>
+      </div>
+
+      <!-- Right: Show All Labels Toggle & Language Switcher -->
+      <div class="flex flex-wrap items-center gap-3 text-xs">
+        <!-- Language Switcher -->
+        <button id="lang-btn" onclick="toggleLanguage()" class="px-2.5 py-1 rounded-lg bg-slate-700 hover:bg-slate-600 border border-slate-500 text-slate-100 font-medium transition cursor-pointer">
+          🌐 <span id="lang-label">ខ្មែរ + English</span>
+        </button>
+
+        <!-- Show/Highlight All Checkbox Matching Screenshot -->
+        <label class="inline-flex items-center gap-2 cursor-pointer select-none bg-slate-800/90 hover:bg-slate-700/90 px-3 py-1 rounded-lg border border-slate-600 transition">
+          <input id="show-all-checkbox" type="checkbox" checked onchange="toggleAllBadges(this.checked)" class="w-4 h-4 rounded accent-blue-500 cursor-pointer" />
+          <span class="font-medium text-slate-100"><span class="kh-text">បង្ហាញតំបន់ទាំងអស់</span> <span class="text-slate-400">(Show All)</span></span>
+        </label>
+      </div>
+    </footer>
+
+  </div>
+
+  <!-- INTERACTIVE DATA & APPLICATION LOGIC -->
+  <script>
+    // Complete Bilingual Dataset for All 14 Motherboard Components
+    const COMPONENTS = [
+      {
+        id: 'cpu',
+        name: 'CPU (Central Processing Unit)',
+        subtitle: 'LGA 1700 Socket • Intel Core Processor',
+        color: '#dc2626',
+        svgIds: ['svg-cpu'],
+        khDesc: 'ខួរក្បាលរបស់កុំព្យូទ័រ ប្រតិបត្តិការ គណនា និងគ្រប់គ្រងប្រព័ន្ធទាំងមូល។',
+        enDesc: 'The brain of the computer that executes instructions, performs arithmetic/logic calculations, and coordinates overall system operations.',
+        iconSvg: `<svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="5" y="5" width="14" height="14" rx="2"/><rect x="9" y="9" width="6" height="6"/><path d="M9 2v3M15 2v3M9 19v3M15 19v3M19 9h3M19 15h3M2 9h3M2 15h3"/></svg>`
+      },
+      {
+        id: 'ram',
+        name: 'RAM (Random Access Memory)',
+        subtitle: '2x DDR4 DIMM Slots • Dual-Channel Memory',
+        color: '#d97706',
+        svgIds: ['svg-ram'],
+        khDesc: 'អង្គចងចាំបណ្តោះអាសន្ន សម្រាប់ផ្ទុកទិន្នន័យដែលកំពុងដំណើរការ។',
+        enDesc: 'Volatile high-speed working memory that temporarily stores active programs and data currently being processed by the CPU.',
+        iconSvg: `<svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="10" rx="1.5"/><path d="M7 17v3M11 17v3M15 17v3M17 17v3M7 10h2v4H7zM11 10h2v4h-2zM15 10h2v4h-2z"/></svg>`
+      },
+      {
+        id: 'rom',
+        name: 'ROM (BIOS/UEFI)',
+        subtitle: 'MXIC 25L12873F • 128 Mbit SPI Flash',
+        color: '#ea580c',
+        svgIds: ['svg-rom'],
+        khDesc: 'អង្គចងចាំអចិន្ត្រៃយ៍ (Firmware) ដើម្បីចាប់ផ្តើមប្រព័ន្ធកុំព្យូទ័រ (Boot)។',
+        enDesc: 'Non-volatile flash memory storing UEFI/BIOS firmware required to initialize hardware (POST) and boot the operating system.',
+        iconSvg: `<svg class="w-5 h-5 text-orange-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="6" y="4" width="12" height="16" rx="2"/><path d="M4 8h2M4 12h2M4 16h2M18 8h2M18 12h2M18 16h2"/></svg>`
+      },
+      {
+        id: 'ssd',
+        name: 'SSD (Solid State Drive)',
+        subtitle: 'M.2 2280 NVMe PCIe Gen4 x4 Slot',
+        color: '#059669',
+        svgIds: ['svg-ssd'],
+        khDesc: 'ឧបករណ៍ផ្ទុកទិន្នន័យល្បឿនលឿន (ប្រព័ន្ធប្រតិបត្តិការ និងកម្មវិធី)។',
+        enDesc: 'High-speed non-volatile solid-state storage module connected via M.2 NVMe interface for fast OS boot and application loading.',
+        iconSvg: `<svg class="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="8" width="18" height="8" rx="1.5"/><circle cx="6" cy="12" r="1"/><rect x="10" y="10" width="4" height="4"/><rect x="16" y="10" width="3" height="4"/></svg>`
+      },
+      {
+        id: 'chipset',
+        name: 'Chipset (Platform Controller Hub)',
+        subtitle: 'Intel PCH • High-Speed I/O Traffic Hub',
+        color: '#7e22ce',
+        svgIds: ['svg-chipset'],
+        khDesc: 'គ្រប់គ្រងការបញ្ជូនទិន្នន័យរវាង CPU, RAM, Storage, PCIe, USB, LAN។',
+        enDesc: 'Central communication controller managing data flow between the CPU, storage drives, PCIe expansion slots, USB, and networking.',
+        iconSvg: `<svg class="w-5 h-5 text-purple-700" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="5" y="5" width="14" height="14" rx="2"/><path d="M8 5v14M12 5v14M16 5v14"/></svg>`
+      },
+      {
+        id: 'super_io',
+        name: 'I/O Controller (Super I/O)',
+        subtitle: 'Nuvoton NCT6798D • Legacy & Hardware Monitor',
+        color: '#2563eb',
+        svgIds: ['svg-super_io'],
+        khDesc: 'គ្រប់គ្រង I/O ទាបដូចជា កង្ហារ សីតុណ្ហភាព តង់ស្យុង និងឧបករណ៍បញ្ចូល/បញ្ចេញ។',
+        enDesc: 'Monitors motherboard temperatures, voltages, and fan speeds while managing low-bandwidth legacy interfaces (COM, PS/2).',
+        iconSvg: `<svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="1.5"/><text x="12" y="14.5" text-anchor="middle" font-size="6" fill="currentColor" stroke="none" font-weight="bold">S/IO</text></svg>`
+      },
+      {
+        id: 'fan_ctrl',
+        name: 'Fan Controller (PWM Controller)',
+        subtitle: 'ITE IT8688E • 4-Pin PWM Thermal Control',
+        color: '#db2777',
+        svgIds: ['svg-fan_ctrl'],
+        khDesc: 'គ្រប់គ្រងល្បឿនកង្ហារ (Fan) តាមសីតុណ្ហភាពរបស់ CPU និងប្រព័ន្ធ។',
+        enDesc: 'Regulates cooling fan RPM dynamically using Pulse Width Modulation (PWM) signals based on real-time CPU thermal sensors.',
+        iconSvg: `<svg class="w-5 h-5 text-pink-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="2"/><path d="M12 3c2 2 2 5 0 7M21 12c-2 2-5 2-7 0M12 21c-2-2-2-5 0-7M3 12c2-2 5-2 7 0"/></svg>`
+      },
+      {
+        id: 'pcie',
+        name: 'PCIe (Peripheral Component Interconnect Express)',
+        subtitle: 'PCIe x16 & PCIe x1 High-Speed Expansion Slots',
+        color: '#1d4ed8',
+        svgIds: ['svg-pcie_x1', 'svg-pcie_x16'],
+        khDesc: 'រន្ធបន្ថែមសម្រាប់ GPU, Wi-Fi, Network, Capture Card និងឧបករណ៍ផ្សេងៗ។',
+        enDesc: 'High-bandwidth serial expansion slots used to install dedicated graphics cards (GPU), Wi-Fi adapters, or network cards.',
+        iconSvg: `<svg class="w-5 h-5 text-blue-700" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="9" width="20" height="6" rx="1"/><path d="M6 12h12"/></svg>`
+      },
+      {
+        id: 'sata',
+        name: 'SATA Port',
+        subtitle: 'Serial ATA 6 Gbps Data Connectors',
+        color: '#0369a1',
+        svgIds: ['svg-sata'],
+        khDesc: 'រន្ធតភ្ជាប់ឧបករណ៍ផ្ទុក SSD/HDD (SATA) 2.5" ឬ 3.5"។',
+        enDesc: 'Serial ATA data ports used to connect traditional 2.5-inch SSDs, 3.5-inch mechanical hard drives (HDD), and optical drives.',
+        iconSvg: `<svg class="w-5 h-5 text-sky-700" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="5" y="6" width="14" height="12" rx="2"/><path d="M9 10v4h6"/></svg>`
+      },
+      {
+        id: 'cmos',
+        name: 'CMOS Battery (RTC Battery)',
+        subtitle: 'CR2032 3V Lithium Coin Cell',
+        color: '#4f46e5',
+        svgIds: ['svg-cmos'],
+        khDesc: 'ថ្មសម្រាប់រក្សាទុកការកំណត់ RTC (នាឡិកា) និងការកំណត់ BIOS/UEFI។',
+        enDesc: '3-volt coin-cell battery powering the Real-Time Clock (RTC) and preserving BIOS/UEFI hardware settings when unplugged.',
+        iconSvg: `<svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 9v6M9 12h6"/></svg>`
+      },
+      {
+        id: 'headers',
+        name: 'Internal Headers',
+        subtitle: '24-Pin Power, Front Panel, USB & Audio Pins',
+        color: '#0284c7',
+        svgIds: ['svg-headers'],
+        khDesc: 'រន្ធតភ្ជាប់ខាងក្នុងដូចជា USB, Audio, Fan, Front Panel (Power/Reset/LED)។',
+        enDesc: 'Internal pin blocks connecting motherboard power, chassis power/reset buttons, status LEDs, and front-panel USB/audio ports.',
+        iconSvg: `<svg class="w-5 h-5 text-sky-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="4" y="7" width="16" height="10" rx="1"/><circle cx="8" cy="10" r="1"/><circle cx="12" cy="10" r="1"/><circle cx="16" cy="10" r="1"/><circle cx="8" cy="14" r="1"/><circle cx="12" cy="14" r="1"/><circle cx="16" cy="14" r="1"/></svg>`
+      },
+      {
+        id: 'cpu_power',
+        name: 'CPU Power 4/8-pin',
+        subtitle: 'ATX +12V Dedicated Processor Power Connector',
+        color: '#eab308',
+        svgIds: ['svg-cpu_power'],
+        khDesc: 'រន្ធផ្គត់ផ្គង់ថាមពល (12V) សម្រាប់ CPU។',
+        enDesc: 'Dedicated +12V power input connector supplying clean, high-current electrical power to the CPU voltage regulator modules (VRMs).',
+        iconSvg: `<svg class="w-5 h-5 text-yellow-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="5" y="7" width="14" height="10" rx="1.5"/><path d="M9 7v10M15 7v10M5 12h14"/></svg>`
+      },
+      {
+        id: 'io_ports',
+        name: 'I/O Ports',
+        subtitle: 'Rear External Panel: USB, HDMI/DP, RJ45, Audio',
+        color: '#9333ea',
+        svgIds: ['svg-io_ports'],
+        khDesc: 'ច្រកតភ្ជាប់ខាងក្រោយដូចជា USB, HDMI/DP, LAN និង Audio។',
+        enDesc: 'External rear connectors providing plug-and-play interfaces for displays, USB peripherals, Ethernet networking, and speakers.',
+        iconSvg: `<svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="14" rx="2"/><path d="M8 9h8M8 13h4M15 15h1"/></svg>`
+      },
+      {
+        id: 'mounting',
+        name: 'Mounting Hole',
+        subtitle: 'Grounded Brass Standoff Screw Points',
+        color: '#64748b',
+        svgIds: ['svg-mounting'],
+        khDesc: 'រន្ធសម្រាប់ចាប់វីសភ្ជាប់បន្ទះមេទៅនឹង Case។',
+        enDesc: 'Conductive copper-plated screw holes used to physically secure the motherboard to chassis standoffs and provide electrical grounding.',
+        iconSvg: `<svg class="w-5 h-5 text-slate-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="3"/></svg>`
+      }
+    ];
+
+    let selectedId = null;
+    let tourInterval = null;
+    let tourIndex = 0;
+    let isEnglishOnly = false;
+
+    // Render Right-Hand Reference List
+    function renderReferenceList() {
+      const container = document.getElementById('components-list');
+      container.innerHTML = COMPONENTS.map((item) => `
+        <div 
+          id="row-${item.id}"
+          onclick="selectPart('${item.id}')"
+          onmouseenter="hoverPart('${item.id}')"
+          onmouseleave="unhoverPart()"
+          class="ref-row p-2.5 sm:px-3 sm:py-2 flex items-start gap-2.5 cursor-pointer hover:bg-blue-50/90 transition-colors duration-150 border-l-4 border-transparent"
+        >
+          <div class="mt-0.5 w-7 h-7 rounded-lg bg-slate-100 border border-slate-200 flex items-center justify-center shrink-0 shadow-2xs">
+            ${item.iconSvg}
+          </div>
+          <div class="min-w-0 flex-1">
+            <div class="text-xs sm:text-[13px] font-bold text-slate-900 leading-snug">${item.name}</div>
+            <div class="kh-text text-[11px] sm:text-[11.5px] text-slate-600 leading-relaxed mt-0.5">${item.khDesc}</div>
+            <div class="en-subtext hidden text-[11px] text-slate-600 leading-relaxed mt-0.5">${item.enDesc}</div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // Bind Hover and Click listeners to Overlaid Hotspot Badges
+    function bindBadgeEvents() {
+      document.querySelectorAll('.hotspot-badge').forEach((badge) => {
+        const partId = badge.getAttribute('data-part');
+        badge.addEventListener('click', (e) => {
+          e.stopPropagation();
+          stopTour();
+          selectPart(partId);
+        });
+        badge.addEventListener('mouseenter', () => {
+          if (!tourInterval) hoverPart(partId);
+        });
+        badge.addEventListener('mouseleave', () => {
+          if (!tourInterval) unhoverPart();
+        });
+      });
+    }
+
+    // Highlight visual elements across Board, Badges, Reference Table, and Bottom Chips
+    function applyHighlight(partId) {
+      // Clear previous highlights
+      document.querySelectorAll('.hotspot-badge').forEach((b) => {
+        b.classList.remove('active', 'dimmed');
+        if (partId && b.getAttribute('data-part') !== partId) {
+          b.classList.add('dimmed');
+        } else if (partId && b.getAttribute('data-part') === partId) {
+          b.classList.add('active');
+        }
+      });
+
+      document.querySelectorAll('.board-zone').forEach((z) => z.classList.remove('highlighted'));
+      document.querySelectorAll('.ref-row').forEach((r) => {
+        r.classList.remove('bg-amber-50', 'border-amber-500', 'ring-1', 'ring-amber-300');
+        r.classList.add('border-transparent');
+      });
+      document.querySelectorAll('.chip-card').forEach((c) => c.classList.remove('ring-2', 'ring-amber-500', 'scale-[1.03]'));
+
+      const inspector = document.getElementById('inspector-card');
+      if (!partId) {
+        inspector.classList.add('hidden');
+        return;
+      }
+
+      const comp = COMPONENTS.find((c) => c.id === partId);
+      if (!comp) return;
+
+      // Highlight SVG board zones
+      comp.svgIds.forEach((svgId) => {
+        const el = document.getElementById(svgId);
+        if (el) el.classList.add('highlighted');
+      });
+
+      // Highlight Reference Table row & scroll into view smoothly
+      const row = document.getElementById(`row-${partId}`);
+      if (row) {
+        row.classList.remove('border-transparent');
+        row.classList.add('bg-amber-50', 'border-amber-500', 'ring-1', 'ring-amber-300');
+        row.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+
+      // Highlight Bottom Controller Chip card if applicable
+      const chip = document.querySelector(`.chip-card[data-chip="${partId}"]`);
+      if (chip) {
+        chip.classList.add('ring-2', 'ring-amber-500', 'scale-[1.03]');
+      }
+
+      // Update & show floating bilingual Inspector Card
+      document.getElementById('inspector-dot').style.backgroundColor = comp.color;
+      document.getElementById('inspector-title').textContent = comp.name;
+      document.getElementById('inspector-subtitle').textContent = comp.subtitle;
+      document.getElementById('inspector-desc-kh').textContent = comp.khDesc;
+      document.getElementById('inspector-desc-en').textContent = comp.enDesc;
+      inspector.classList.remove('hidden');
+    }
+
+    function hoverPart(partId) {
+      applyHighlight(partId);
+    }
+
+    function unhoverPart() {
+      applyHighlight(selectedId);
+    }
+
+    function selectPart(partId) {
+      selectedId = selectedId === partId ? null : partId;
+      applyHighlight(selectedId);
+    }
+
+    function clearSelection() {
+      stopTour();
+      selectedId = null;
+      applyHighlight(null);
+    }
+
+    // Toggle visibility of all hotspot badges
+    function toggleAllBadges(isVisible) {
+      const overlay = document.getElementById('badges-overlay');
+      const lines = document.getElementById('leader-lines');
+      if (isVisible) {
+        overlay.classList.remove('opacity-0', 'pointer-events-none');
+        lines.classList.remove('opacity-0');
+      } else {
+        overlay.classList.add('opacity-0', 'pointer-events-none');
+        lines.classList.add('opacity-0');
+      }
+    }
+
+    // Guided Interactive Tour stepping through all 14 components
+    function toggleTour() {
+      if (tourInterval) {
+        stopTour();
+      } else {
+        startTour();
+      }
+    }
+
+    function startTour() {
+      const btn = document.getElementById('tour-btn');
+      const icon = document.getElementById('tour-icon');
+      const label = document.getElementById('tour-label');
+
+      // Ensure badges are visible during tour
+      const checkbox = document.getElementById('show-all-checkbox');
+      if (!checkbox.checked) {
+        checkbox.checked = true;
+        toggleAllBadges(true);
+      }
+
+      btn.classList.replace('bg-blue-600', 'bg-amber-600');
+      btn.classList.replace('hover:bg-blue-500', 'hover:bg-amber-500');
+      icon.textContent = '⏹';
+      label.innerHTML = `<span class="kh-text">បញ្ឈប់ការទស្សនា </span>(Stop Tour)`;
+
+      tourIndex = 0;
+      selectedId = COMPONENTS[tourIndex].id;
+      applyHighlight(selectedId);
+
+      tourInterval = setInterval(() => {
+        tourIndex = (tourIndex + 1) % COMPONENTS.length;
+        selectedId = COMPONENTS[tourIndex].id;
+        applyHighlight(selectedId);
+      }, 2800);
+    }
+
+    function stopTour() {
+      if (!tourInterval) return;
+      clearInterval(tourInterval);
+      tourInterval = null;
+
+      const btn = document.getElementById('tour-btn');
+      const icon = document.getElementById('tour-icon');
+      const label = document.getElementById('tour-label');
+
+      btn.classList.replace('bg-amber-600', 'bg-blue-600');
+      btn.classList.replace('hover:bg-amber-500', 'hover:bg-blue-500');
+      icon.textContent = '▶';
+      label.innerHTML = `<span class="kh-text">ដើម្បីទស្សនាទាំងអស់ </span>(Tour)`;
+    }
+
+    // Bilingual Mode Toggle (Khmer + English vs English Only)
+    function toggleLanguage() {
+      isEnglishOnly = !isEnglishOnly;
+      document.body.classList.toggle('en-only', isEnglishOnly);
+      document.getElementById('lang-label').textContent = isEnglishOnly ? 'English Only' : 'ខ្មែរ + English';
+
+      // Swap right-hand row descriptions to English when in English-only mode
+      document.querySelectorAll('.en-subtext').forEach((el) => {
+        el.classList.toggle('hidden', !isEnglishOnly);
+      });
+    }
+
+    // Initialize Application on Load
+    window.addEventListener('DOMContentLoaded', () => {
+      renderReferenceList();
+      bindBadgeEvents();
+
+      // Clicking empty PCB area clears active lock
+      document.getElementById('motherboard-svg').addEventListener('click', (e) => {
+        if (e.target.id === 'motherboard-svg' || e.target.tagName === 'rect') {
+          if (!e.target.closest('.board-zone')) {
+            clearSelection();
+          }
+        }3
+      });
+    });
+  </script>
+</body>
+</html>

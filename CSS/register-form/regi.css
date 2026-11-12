@@ -1,0 +1,116 @@
+body{
+    background-image: url("https://i.pinimg.com/1200x/24/b4/a1/24b4a1a3db937ab7254575f70922a103.jpg");
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+.form-register{
+    width: 500px;
+    height: 700px;
+    border: 1px solid black;
+    border-radius: 10px;
+    margin: 50px auto;
+    padding: 30px;
+    box-shadow: 0px 0px 20px 0px rgba(242, 13, 51, 0.632) inset;
+    background-color: rgba(125, 140, 148, 0.381);
+}
+.sup-title{
+    text-align: center;
+    font-size: 30px;
+    color: rgba(255, 255, 255, 0.888);
+}
+.sub-title{
+    text-align: center;
+}
+.first-name{
+    font-style: italic;
+    font-size: 20px
+}
+.input{
+    font-style: italic;
+    font-weight: bold;
+    border-radius: 10px;
+    border: none;
+    box-shadow: 0px 0px 15px 0px aqua inset;
+    width: 80%;
+    padding: 5px;
+}
+.last-name{
+    font-style: italic;
+    font-size: 20px;
+}
+.input1{
+    font-style: italic;
+    font-weight: bold;
+    border: none;
+    border-radius: 10px;
+    width: 80%;
+    padding: 5px;
+    box-shadow: 0px 0px 15px 0px blue inset;
+}
+.emial{
+    font-size: 20px;
+    font-style: italic;
+}
+.input-email{
+    border-radius: 10px;
+    width: 80%;
+    border: none;
+    padding: 5px;
+    box-shadow: 0px 0px 15px 0px yellow inset;
+    font-style: italic;
+    font-weight: bold;
+}
+.phone-num{
+    font-size: 20px;
+    font-style: italic;
+}
+.input-phone{
+    border-radius: 10px;
+    border: none;
+    width: 80%;
+    padding: 5px;
+    box-shadow: 0px 0px 15px 0px black inset;
+    font-style: italic;
+    font-weight: bold;
+}
+.time-date{
+    font-style: italic;
+    font-size: 20px;
+}
+.input-date{
+    border-radius: 5px;
+    border: none;
+    width: 25%;
+    padding: 5px;
+    font-size: 17px;
+    background-color: rgba(65, 60, 60, 0.61);
+    color: rgba(255, 255, 255, 0.726);
+    box-shadow: 0px 0px 15px 0px rgba(214, 47, 102, 0.87) inset;
+}
+.time-birth{
+    font-size: 20px;
+    font-style: italic;
+}
+.input-time{
+    border-radius: 5px;
+    border: none;
+    padding: 5px;
+    width: 25%;
+    box-shadow: 0px 0px 20px 0px rgba(242, 24, 242, 0.92) inset ;
+    text-align: center;
+}   
+.chosee-op{
+    font-style: italic;
+    font-size: 20px;
+}
+.select-op{
+    border: none;
+    border-radius: 10px;
+    padding: 5px;
+    font-size: 15px;
+    text-align: center;
+    background-color: rgba(87, 159, 161, 0.386);
+}
+.focus:focus{
+    background-color: yellow;
+}
